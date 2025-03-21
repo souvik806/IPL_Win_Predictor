@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Win Probability Predictor</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen">
+        <img src="https://1000logos.net/wp-content/uploads/2022/08/Indian-Premier-League-Logo.png" alt="IPL Logo">
+    </div>
+
+    <!-- Audio Control -->
+    <div class="audio-control">
+        <button id="audioToggle">
+            <span class="icon-play">🔊</span>
+            <span class="icon-pause hidden">🔇</span>
+        </button>
+    </div>
+    
+    <!-- Background Audio -->
+    <audio id="backgroundAudio" loop>
+        <source src="ipl-theme.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="floating-image">
+            <img src="https://png.pngtree.com/png-vector/20241214/ourmid/pngtree-colorful-cricket-batsman-hitting-with-bat-png-image_14784771.png" alt="Floating Image">
+        </div>
+        <h1>IPL Win Probability Predictor</h1>
+        <form id="winPredictorForm">
+            <div class="input-row">
+                <div>
+                    <label style="color: rgb(156, 153, 149);" for="battingTeam">Batting Team:</label>
+                    <select id="battingTeam">
+                        <option>Sunrisers Hyderabad</option>
+                        <option>Mumbai Indians</option>
+                        <option>Royal Challengers Bangalore</option>
+                        <option>Kolkata Knight Riders</option>
+                        <option>Kings XI Punjab</option>
+                        <option>Chennai Super Kings</option>
+                        <option>Rajasthan Royals</option>
+                        <option>Delhi Capitals</option>
+                        <option>Lucknow Super Giants</option>
+                        <option>Gujarat Titan</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color: rgb(156, 153, 149);" for="bowlingTeam">Bowling Team:</label>
+                    <select id="bowlingTeam">
+                        <option>Sunrisers Hyderabad</option>
+                        <option>Mumbai Indians</option>
+                        <option>Royal Challengers Bangalore</option>
+                        <option>Kolkata Knight Riders</option>
+                        <option>Kings XI Punjab</option>
+                        <option>Chennai Super Kings</option>
+                        <option>Rajasthan Royals</option>
+                        <option>Delhi Capitals</option>
+                        <option>Lucknow Super Giants</option>
+                        <option>Gujarat Titan</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-row">
+                <div>
+                    <label style="color: rgb(156, 153, 149);">Current Score:</label>
+                    <input type="number" id="currentScore" value="0">
+                </div>
+                <div>
+                    <label style="color: rgb(156, 153, 149);">Overs Completed:</label>
+                    <input type="number" id="oversCompleted" value="0" step="0.1" min="0" max="20">
+                </div>
+                <div>
+                    <label style="color: rgb(156, 153, 149);">Target:</label>
+                    <input type="number" id="target" value="0">
+                </div>
+                <div>
+                    <label style="color: rgb(156, 153, 149);">Wicket:</label>
+                    <input type="number" id="wickets" value="0">
+                </div>
+            </div>
+            
+            <label style="color: rgb(156, 153, 149);">Select Venue:</label>
+            <select id="venue">
+                <option>Hyderabad</option>
+                <option>Bangalore</option>
+                <option>Mumbai</option>
+                <option>Indore</option>
+                <option>Kolkata</option>
+                <option>Delhi</option>
+                <option>Chandigarh</option>
+                <option>Jaipur</option>
+                <option>Chennai</option>
+                <option>Cape Town</option>
+                <option>Port Elizabeth</option>
+                <option>Durban</option>
+                <option>Centurion</option>
+                <option>East London</option>
+                <option>Johannesburg</option>
+                <option>Kimberley</option>
+                <option>Bloemfontein</option>
+                <option>Ahmedabad</option>
+                <option>Cuttack</option>
+                <option>Nagpur</option>
+                <option>Dharamsala</option>
+                <option>Visakhapatnam</option>
+                <option>Pune</option>
+                <option>Raipur</option>
+                <option>Ranchi</option>
+                <option>Abu Dhabi</option>
+                <option>Sharjah</option>
+                <option>Mohali</option>
+                <option>Bengaluru</option>
+
+                
+            </select>
+            
+            <button type="button" onclick="predictWinProbability()">Predict Win Probability</button>
+        <div class = 'result'> 
+            <h3 id="result"></h3>
+        </div>
+        </form>
+    </div>
+
+    <!-- <script src="script.js"></script> -->
+    <script>
+        function predictWinProbability() {
+            // Collect input values
+            const data = {
+                batting_team: document.getElementById('battingTeam').value,
+                bowling_team: document.getElementById('bowlingTeam').value,
+                city: document.getElementById('venue').value,
+                target: parseInt(document.getElementById('target').value),
+                score: parseInt(document.getElementById('currentScore').value),
+                overs: parseInt(document.getElementById('oversCompleted').value),
+                wickets: parseInt(document.getElementById('wickets').value)
+            };
+
+            // Send data to Flask backend
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display result
+                document.getElementById('result').innerText = `Chance for Batting Team to Win: ${data.batting_team_probability}% \n Chance for Bowling Team to Win: ${data.bowling_team_probability}% `;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        // Audio functionality
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const audio = document.getElementById('backgroundAudio');
+        //     const audioToggle = document.getElementById('audioToggle');
+        //     const iconPlay = document.querySelector('.icon-play');
+        //     const iconPause = document.querySelector('.icon-pause');
+        //     let audioStarted = false;
+            
+        //     // Function to start playing audio after splash screen
+        //     function startAudio() {
+        //         if (!audioStarted) {
+        //             audio.play().catch(e => {
+        //                 console.log("Auto-play prevented by browser. User needs to interact with the page first.");
+        //             });
+        //             audioStarted = true;
+        //         }
+        //     }
+            
+        //     // Start audio after splash screen animation (approximately 3 seconds)
+        //     setTimeout(startAudio, 3000);
+            
+        //     // Toggle audio on button click
+        //     audioToggle.addEventListener('click', function() {
+        //         if (audio.paused) {
+        //             audio.play();
+        //             iconPlay.classList.remove('hidden');
+        //             iconPause.classList.add('hidden');
+        //         } else {
+        //             audio.pause();
+        //             iconPlay.classList.add('hidden');
+        //             iconPause.classList.remove('hidden');
+        //         }
+        //         audioStarted = false;
+        //     });
+        // });
+    </script>
+</body>
+</html>
