@@ -130,6 +130,10 @@
     <!-- <script src="script.js"></script> -->
     <script>
         function predictWinProbability() {
+            const backendURL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000'  // Local URL for development
+    : 'https://your-app-name.onrender.com';  // Deployed Render URL for production
+
             // Collect input values
             const data = {
                 batting_team: document.getElementById('battingTeam').value,
@@ -142,7 +146,7 @@
             };
 
             // Send data to Flask backend
-            fetch('http://127.0.0.1:5000/predict', {
+            fetch(`${backendURL}/predict`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
